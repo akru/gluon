@@ -1,12 +1,10 @@
 GLUON_FEEDS='openwrt gluon routing luci'
 
-LEDE_REPO=https://git.lede-project.org/openwrt/openwrt.git
-LEDE_BRANCH=lede-17.01
-LEDE_COMMIT=999bb66b20b03c753801ecebf1ec2a03c6a63c96
+OPENWRT_REPO=https://git.openwrt.org/openwrt/openwrt.git
+OPENWRT_COMMIT=dc629d9cf5afc03f67a294078ca1001e831c66c9
 
 PACKAGES_OPENWRT_REPO=https://github.com/openwrt/packages.git
-PACKAGES_OPENWRT_BRANCH=lede-17.01
-PACKAGES_OPENWRT_COMMIT=82ef2fd773987a72678a32b862f50085c3f57d56
+PACKAGES_OPENWRT_COMMIT=fa05faee7da46569c6bee006676a530bcc40bf4a
 
 PACKAGES_GLUON_REPO=https://github.com/freifunk-gluon/packages.git
 PACKAGES_GLUON_COMMIT=6c38a5dd639ee4649bc98401c5b3bb27ff99de4d
@@ -15,5 +13,4 @@ PACKAGES_ROUTING_REPO=https://github.com/openwrt-routing/packages.git
 PACKAGES_ROUTING_COMMIT=ba5d2fc76e1cee2cb656d955514c8aa526875a6a
 
 PACKAGES_LUCI_REPO=https://github.com/openwrt/luci.git
-PACKAGES_LUCI_BRANCH=lede-17.01
-PACKAGES_LUCI_COMMIT=1f014bd2180b364bec4c3f6457f72a0621884f9a
+PACKAGES_LUCI_COMMIT=09ea6dbd33cc46df3ca17c640ffcb3d148a4639a
