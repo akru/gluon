@@ -31,6 +31,7 @@ let
         fixWrapper
         systemd
         binutils
+        time
 
         ncurses
         zlib
