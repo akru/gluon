@@ -67,8 +67,8 @@ opkg \: optional
 
     There are two optional fields in the ``opkg`` section:
 
-    - ``lede`` overrides the default LEDE repository URL. The default URL would
-      correspond to ``http://downloads.lede-project.org/snapshots/packages/%A``
+    - ``openwrt`` overrides the default OpenWrt repository URL. The default URL would
+      correspond to ``http://downloads.openwrt.org/snapshots/packages/%A``
       and usually doesn't need to be changed when nodes are expected to have IPv6
       internet connectivity.
     - ``extra`` specifies a table of additional repositories (with arbitrary keys)
@@ -76,7 +76,7 @@ opkg \: optional
     ::
 
       opkg = {
-        lede = 'http://opkg.services.ffac/lede/snapshots/packages/%A',
+        openwrt = 'http://opkg.services.ffac/openwrt/snapshots/packages/%A',
         extra = {
           gluon = 'http://opkg.services.ffac/modules/gluon-%GS-%GR/%S',
         },
@@ -84,8 +84,8 @@ opkg \: optional
 
     There are various patterns which can be used in the URLs:
 
-    - ``%n`` is replaced by the LEDE version codename
-    - ``%v`` is replaced by the LEDE version number (e.g. "17.01")
+    - ``%d`` is replaced by the OpenWrt distribution name ("openwrt")
+    - ``%v`` is replaced by the OpenWrt version number (e.g. "17.01")
     - ``%S`` is replaced by the target board (e.g. "ar71xx/generic")
     - ``%A`` is replaced by the target architecture (e.g. "mips_24kc")
     - ``%GS`` is replaced by the Gluon site code (as specified in ``site.conf``)
@@ -181,6 +181,8 @@ next_node \: package
     server (e.g. to allow reaching the node using such a hostname via HTTP or SSH
     in isolated mesh segments). This is possible by providing one or more names
     in the ``name`` field.
+
+.. _user-site-mesh:
 
 mesh
     Configuration of general mesh functionality.
@@ -475,21 +477,72 @@ GLUON_WLAN_MESH
   support both meshing modes, either at all (e.g. ralink and mediatek don't support AP+IBSS) or in the
   same firmware (ath10k-based 5GHz). Defaults to ``11s``.
 
-Features
-^^^^^^^^
+.. _user-site-feature-flags:
 
-Each package starting with "gluon-" can be included as a feature _flag_ by
-omitting the prefix "gluon-"; for example, the flag *mesh-batman-adv-15* will
-include only the package *gluon-mesh-batman-adv-15*.
+Feature flags
+^^^^^^^^^^^^^
 
-Some flags are specially treated (for example `web-wizard` and `web-advanced`)
-and can contain more than one package. Those are defined in the config file
-`package/features`. Please read that file for more details.
+With the addition of more and more features that interact in complex ways, it
+has become necessary to split certain packages into multiple parts, so it is
+possible to install just what is needed for a specific usecase. One example
+is the package *gluon-status-page-mesh-batman-adv*: There are batman-adv-specific
+status page components; they should only be installed when both batman-adv and
+the status page are enabled, making the addition of a specific package for this
+combination necessary.
 
-Site-provided package feeds can define additional feature flags. To use own
-package feeds to define your own features, add a file `gluon/features` to your
-site folder.
+With the ongoing modularization, e.g. for the purpose of supporting new
+routing protocols, specifying all such split packages in *site.mk* would
+soon become very cumbersome: In the future, further components like
+respondd support or languages might be split off as separate packages,
+leading to entangled package names like *gluon-mesh-vpn-fastd-respondd* or
+*gluon-status-page-mesh-batman-adv-i18n-de*.
 
+For this reason, we have introduced *feature flags*, which can be specified
+in the *GLUON_FEATURES* variable. These flags allow to specify a set of features
+on a higher level than individual package names.
+
+Most Gluon packages can simply be specified as feature flags by removing the ``gluon-``
+prefix: The feature flag corresponding to the package *gluon-mesh-batman-adv-15* is
+*mesh-batman-adv-15*.
+
+The file ``package/features`` in the Gluon repository (or
+``features`` in site feeds) can specify additional rules for deriving package lists
+from feature flags, e.g. specifying both *status-page* and either *mesh-batman-adv-14*
+or *mesh-batman-adv-15* will automatically select the additional package
+*gluon-status-page-mesh-batman-adv*. In the future, selecting the flags
+*mesh-vpn-fastd* and *respondd* might automatically enable the additional
+package *gluon-mesh-vpn-fastd-respondd*, and enabling *status-page* and
+*mesh-batman-adv-15* (or *-14*) with ``de`` in *GLUON_LANGS* could
+add the package *gluon-status-page-mesh-batman-adv-i18n-de*.
+
+In short, it is not necessary anymore to list all the individual packages that are
+relevant for a firmware; instead, the package list is derived from a list of feature
+flags using a flexible ruleset defined in the Gluon repo or site package feeds.
+To some extent, it will even allow us to further modularize existing Gluon packages,
+without necessitating changes to existing site configurations.
+
+It is still possible to override such automatic rules using *GLUON_SITE_PACKAGES*
+(e.g., ``-gluon-status-page-mesh-batman-adv`` to remove the automatically added
+package *gluon-status-page-mesh-batman-adv*).
+
+For convenience, there are two feature flags that do not directly correspond to a Gluon
+package:
+
+* web-wizard
+
+  Includes the *gluon-config-mode-...* base packages (hostname, geolocation and contact info),
+  as well as the *gluon-config-mode-autoupdater* (when *autoupdater* is in *GLUON_FEATURES*),
+  and *gluon-config-mode-mesh-vpn* (when *mesh-vpn-fastd* or *mesh-vpn-tunneldigger* are in
+  *GLUON_FEATURES*)
+
+* web-advanced
+
+  Includes the *gluon-web-...* base packages (admin, network, WiFi config),
+  as well as the *gluon-web-autoupdater* (when *autoupdater* is in *GLUON_FEATURES*)
+
+We recommend to use *GLUON_SITE_PACKAGES* for non-Gluon OpenWrt packages only and
+completely rely on *GLUON_FEATURES* for Gluon packages, as it is shown in the
+example *site.mk*.
 
 .. _site-config-mode-texts:
 
@@ -513,6 +566,18 @@ gluon-config-mode:altitude-label
 
 gluon-config-mode:altitude-help
     Description for the usage of the ``altitude`` field
+
+gluon-config-mode:contact-help
+    Description for the usage of the ``contact`` field
+
+gluon-config-mode:contact-note
+    Note shown (in small font) below the ``contact`` field
+
+gluon-config-mode:hostname-help
+    Description for the usage of the ``hostname`` field
+
+gluon-config-mode:geo-location-help
+    Description for the usage of the longitude/latitude fields
 
 gluon-config-mode:reboot
     General information shown on the reboot page.
@@ -608,7 +673,8 @@ This is a non-exhaustive list of site-repos from various communities:
 * `site-ffac <https://github.com/ffac/site>`_ (Regio Aachen)
 * `site-ffbs <https://github.com/ffbs/site-ffbs>`_ (Braunschweig)
 * `site-ffhb <https://github.com/FreifunkBremen/gluon-site-ffhb>`_ (Bremen)
-* `site-ffda <https://github.com/freifunk-darmstadt/site-ffda>`_ (Darmstadt)
+* `site-ffda <https://git.darmstadt.ccc.de/ffda/site>`_ (Darmstadt)
+* `site-ff3l <https://github.com/ff3l/site-ff3l>`_ (Dreiländereck)
 * `site-ffeh <https://github.com/freifunk-ehingen/site-ffeh>`_ (Ehingen)
 * `site-fffl <https://github.com/freifunk-flensburg/site-fffl>`_ (Flensburg)
 * `site-ffgoe <https://github.com/freifunk-goettingen/site-ffgoe>`_ (Göttingen)
@@ -617,7 +683,7 @@ This is a non-exhaustive list of site-repos from various communities:
 * `site-ffho <https://git.ffho.net/freifunkhochstift/ffho-site>`_ (Hochstift)
 * `site-ffhgw <https://github.com/lorenzo-greifswald/site-ffhgw>`_ (Greifswald)
 * `site-ffka <https://github.com/ffka/site-ffka>`_ (Karlsruhe)
-* `site-ffki <http://git.freifunk.in-kiel.de/ffki-site/>`_ (Kiel)
+* `site-ffki <https://git.freifunk.in-kiel.de/ffki-site/>`_ (Kiel)
 * `site-fflz <https://github.com/freifunk-lausitz/site-fflz>`_ (Lausitz)
 * `site-ffl <https://github.com/freifunk-leipzig/freifunk-gluon-leipzig>`_ (Leipzig)
 * `site-ffhl <https://github.com/freifunk-luebeck/site-ffhl>`_ (Lübeck)
@@ -632,6 +698,7 @@ This is a non-exhaustive list of site-repos from various communities:
 * `site-ffms <https://github.com/FreiFunkMuenster/site-ffms>`_ (Münsterland)
 * `site-neuss <https://github.com/ffne/site-neuss>`_ (Neuss)
 * `site-ffniers <https://github.com/ffruhr/site-ffniers>`_ (Niersufer)
+* `site-ffndh <https://github.com/freifunk-nordheide/ffnordheide/tree/ffnh-lede/ffndh-site>`_ (Nordheide)
 * `site-ffnw <https://git.nordwest.freifunk.net/ffnw-firmware/siteconf/tree/master>`_ (Nordwest)
 * `site-ffrgb <https://github.com/ffrgb/site-ffrgb>`_ (Regensburg)
 * `site-ffrn <https://github.com/Freifunk-Rhein-Neckar/site-ffrn>`_ (Rhein-Neckar)

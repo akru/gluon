@@ -15,7 +15,7 @@ device tp-link-tl-wa701n-nd-v1 tl-wa701nd-v1
 device tp-link-tl-wa701n-nd-v2 tl-wa701nd-v2
 
 device tp-link-tl-wa7210n-v2 tl-wa7210n-v2
-device tp-link-tl-wa7510n-v1 tl-wa7510n
+device tp-link-tl-wa7510n-v1 tl-wa7510n-v1
 
 device tp-link-tl-wr703n-v1 tl-wr703n-v1
 
@@ -89,6 +89,7 @@ device tp-link-tl-wa901n-nd-v1 tl-wa901nd-v1
 device tp-link-tl-wa901n-nd-v2 tl-wa901nd-v2
 device tp-link-tl-wa901n-nd-v3 tl-wa901nd-v3
 device tp-link-tl-wa901n-nd-v4 tl-wa901nd-v4
+device tp-link-tl-wa901n-nd-v5 tl-wa901nd-v5
 
 device tp-link-tl-mr13u-v1 tl-mr13u-v1
 

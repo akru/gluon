@@ -25,6 +25,7 @@ Several Freifunk communities in Germany use Gluon as the foundation of their Fre
    features/wired-mesh
    features/dns-forwarder
    features/monitoring
+   features/multidomain
    features/authorized-keys
    features/roles
    features/vpn
@@ -34,11 +35,12 @@ Several Freifunk communities in Germany use Gluon as the foundation of their Fre
    :maxdepth: 2
 
    dev/basics
-   dev/feature-flags
    dev/hardware
+   dev/packages
    dev/upgrade
    dev/wan
    dev/mac_addresses
+   dev/site_library
 
 .. toctree::
    :caption: gluon-web Reference
@@ -68,6 +70,8 @@ Several Freifunk communities in Germany use Gluon as the foundation of their Fre
    :caption: Releases
    :maxdepth: 1
 
+   releases/v2018.1
+   releases/v2017.1.8
    releases/v2017.1.7
    releases/v2017.1.6
    releases/v2017.1.5
@@ -163,11 +167,13 @@ ar71xx-generic
 
 * OpenMesh
 
+  - A40
+  - A60
   - MR600 (v1, v2)
   - MR900 (v1, v2)
   - MR1750 (v1, v2) [#ath10k]_
-  - OM2P (v1, v2)
-  - OM2P-HS (v1, v2, v3)
+  - OM2P (v1, v2, v4)
+  - OM2P-HS (v1, v2, v3, v4)
   - OM2P-LC
   - OM5P
   - OM5P-AN
@@ -178,7 +184,7 @@ ar71xx-generic
   - Archer C5 (v1) [#ath10k]_
   - Archer C59 (v1) [#80211s]_
   - Archer C7 (v2, v4) [#ath10k]_
-  - CPE210 (v1.0, v1.1)
+  - CPE210 (v1.0, v1.1, v2.0)
   - CPE220 (v1.1)
   - CPE510 (v1.0, v1.1)
   - CPE520 (v1.1)
@@ -231,6 +237,10 @@ ar71xx-nand
   - WNDR3700 (v4)
   - WNDR4300 (v1)
 
+* ZyXEL
+
+  - NBG6716 [#ath10k]_
+
 ar71xx-tiny
 ^^^^^^^^^^^
 
@@ -252,7 +262,7 @@ ar71xx-tiny
   - TL-WA830RE (v1, v2)
   - TL-WA850RE (v1)
   - TL-WA860RE (v1)
-  - TL-WA901N/ND (v1, v2, v3, v4)
+  - TL-WA901N/ND (v1, v2, v3, v4, v5)
   - TL-WA7210N (v2)
   - TL-WA7510N (v1)
   - TL-WR703N (v1)
@@ -274,6 +284,27 @@ brcm2708-bcm2709
 ^^^^^^^^^^^^^^^^
 
 * RaspberryPi 2
+
+
+ipq40xx
+^^^^^^^
+
+* AVM
+
+  - FRITZ!Box 4040 [#80211s]_
+
+* GL.iNet
+
+  - GL-B1300 [#80211s]_
+
+* NETGEAR
+
+  - EX6100v2 [#80211s]_
+  - EX6150v2 [#80211s]_
+
+* ZyXEL
+
+  - WRE6606 [#80211s]_
 
 ipq806x
 ^^^^^^^
